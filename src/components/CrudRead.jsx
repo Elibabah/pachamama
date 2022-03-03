@@ -42,7 +42,7 @@ export const CrudRead = (correoUsuario) => {
       return(
             <div>
                   <h5>Esto irá adentro de modal</h5>
-                  <form onSubmit={} className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
+                  <form className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
 
                   <label htmlFor="title" className='block text-gray-700 text-sm font-fold mb-2'>Cuéntanos tu historia</label>
 
