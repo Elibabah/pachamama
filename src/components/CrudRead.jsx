@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, addDoc, getDocs, doc, onSnapshot, querySnapshot } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, onSnapshot, querySnapshot, deleteDoc} from "firebase/firestore";
 import { db } from "../firebase"
 
 
@@ -31,6 +31,9 @@ export const CrudRead = (correoUsuario) => {
 
       async function eliminarPublicacion(id){
             console.log(id)
+
+            await deleteDoc(doc(db, "posts", id));
+
             /*db.collection("posts").doc(id).delete().then(function(){
                   console.log("Document successfully deleted!");
             }).catch(function(error){
