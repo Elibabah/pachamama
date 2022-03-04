@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, addDoc, getDocs, doc, onSnapshot, querySnapshot, deleteDoc} from "firebase/firestore";
+import { collection, addDoc, getDoc, getDocs, doc, onSnapshot, querySnapshot, deleteDoc} from "firebase/firestore";
 import { db } from "../firebase"
 
 import Box from '@mui/material/Box';
@@ -40,10 +40,6 @@ export const CrudRead = (correoUsuario) => {
             //actualizar state
       }
 
-      async function editarPublicacion(id, title, story){
-            console.log(id, title, story)
-      }
-
       const style = {
             position: 'absolute',
             top: '50%',
@@ -57,9 +53,47 @@ export const CrudRead = (correoUsuario) => {
       };
 
       const [open, setOpen] = React.useState(false);
-      const handleOpen = (id, title, story) => {
+
+
+      const [values, setValues] = useState({
+            title: "", 
+            story: ""
+      });
+
+      const handleInputChange = e => {
+            const {id, value} = e.target
+            setValues({...values, [id]: value})
+      }
+      
+      const handleEdit = (e) =>{
+            e.preventDefault()
+            console.log(values)
+      }
+
+      const handleEditar = async (id) => {
             setOpen(true)
-            console.log(id, title, story)
+            console.log(id)
+
+            //Obtener documento de firestore usando su ID
+            const docRef = doc(db, "posts", id);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+            console.log("Document data:", docSnap.data());
+            //Pasar valores a formulario
+            console.log(docSnap.data().title)
+            console.log(docSnap.data().story)
+            //setValues({...docSnap.data()})
+            const title = docSnap.data().title
+            //const story = docSnap.data().story
+            //console.log(title, story)
+            setValues({...docSnap.data(), [title]: docSnap.data().title})
+            } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+            }
+
+
       };
 
       const handleClose = () => setOpen(false);
@@ -76,9 +110,9 @@ export const CrudRead = (correoUsuario) => {
                   <Typography id="modal-modal-title" variant="h6" component="h2">
                   Edita tu historia
                   </Typography>
-                        <form className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
-                              <input type="text" id="title" placeholder="título" className='shadow appareance-non border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'/>
-                              <input type="text" id="story" placeholder="Escribe tu historia" className='shadow appareance-non border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'/>
+                        <form onSubmit={handleEdit} className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
+                              <input onChange={handleInputChange} type="text" id="title" placeholder="título" className='shadow appareance-non border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'/>
+                              <input onChange={handleInputChange} type="text" id="story" placeholder="Escribe tu historia" className='shadow appareance-non border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'/>
                               <button className='bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'>Guardar editado</button>
                         </form>
                   </Box>
@@ -92,7 +126,7 @@ export const CrudRead = (correoUsuario) => {
                                     <p>Historia: {post.story}</p>
                                     {correoUsuario.correoUsuario === post.author.correoUsuario ? (
                                           <div>
-                                                <Button onClick={()=>handleOpen (post.id, post.title, post.story)}>Editar</Button>
+                                                <Button onClick={()=>handleEditar (post.id, post.title, post.story)}>Editar</Button>
                                                 <button onClick={()=> eliminarPublicacion(post.id)}>Eliminar</button>
                                           </div>
                                     ): (null)}
