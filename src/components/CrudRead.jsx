@@ -21,18 +21,6 @@ export const CrudRead = (correoUsuario) => {
             getPosts();
       }, []);
 
-      /*const getData = () => {
-            postsCollectionRef.onSnapshot((resultados) => {
-            const datos = resultados.docs.map((doc) => ({
-                  id: doc.id, 
-                  ...doc.data(), 
-            }));
-            console.log("Todos los datos de la colección 'posts'", datos);
-            });
-      }
-      useEffect(() => {
-            getData();
-      }, []);*/
 
       async function eliminarPublicacion(id){
             console.log(id)
@@ -54,18 +42,16 @@ export const CrudRead = (correoUsuario) => {
 
       const [open, setOpen] = React.useState(false);
 
+      const valoresInputs = {title: "", story: ""}
 
-      const [values, setValues] = useState({
-            title: "", 
-            story: ""
-      });
+      const [values, setValues] = useState(valoresInputs);
 
       const handleInputChange = e => {
             const {id, value} = e.target
             setValues({...values, [id]: value})
       }
       
-      const handleEdit = (e) =>{
+      const enviarEdit = (e) =>{
             e.preventDefault()
             console.log(values)
       }
@@ -80,20 +66,26 @@ export const CrudRead = (correoUsuario) => {
 
             if (docSnap.exists()) {
             console.log("Document data:", docSnap.data());
-            //Pasar valores a formulario
+            //Encontramos valores
             console.log(docSnap.data().title)
             console.log(docSnap.data().story)
-            //setValues({...docSnap.data()})
+
+            //Actualizamos inputs con valores de firestore
             const title = docSnap.data().title
-            //const story = docSnap.data().story
-            //console.log(title, story)
-            setValues({...docSnap.data(), [title]: docSnap.data().title})
+            const story = docSnap.data().story
+
+            const newValues = {
+                  title: title,
+                  story: story
+            }
+
+            console.log(newValues)
+            setValues({...newValues})
+
             } else {
             // doc.data() will be undefined in this case
             console.log("No such document!");
             }
-
-
       };
 
       const handleClose = () => setOpen(false);
@@ -110,7 +102,7 @@ export const CrudRead = (correoUsuario) => {
                   <Typography id="modal-modal-title" variant="h6" component="h2">
                   Edita tu historia
                   </Typography>
-                        <form onSubmit={handleEdit} className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
+                        <form onSubmit={enviarEdit} className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
                               <input onChange={handleInputChange} type="text" id="title" placeholder="título" className='shadow appareance-non border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'/>
                               <input onChange={handleInputChange} type="text" id="story" placeholder="Escribe tu historia" className='shadow appareance-non border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'/>
                               <button className='bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'>Guardar editado</button>
